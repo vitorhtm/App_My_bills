@@ -57,6 +57,19 @@ export default function Menu() {
           </TouchableOpacity>
         </Link>
 
+                {/* Item Menu - Minha carteira */}
+        <Link href="/minha-carteira" asChild>
+          <TouchableOpacity style={styles.menuItem}>
+            <View style={styles.menuItemLeft}>
+              <View style={styles.iconContainer}>
+                <Text style={styles.iconText}>💵</Text>
+              </View>
+              <Text style={styles.menuItemText}>Minha carteira</Text>
+            </View>
+            <Text style={styles.arrow}>›</Text>
+          </TouchableOpacity>
+        </Link>
+
         {/* Item Menu - Configurações */}
         <Link href="/configuracoes" asChild>
           <TouchableOpacity style={styles.menuItem}>
