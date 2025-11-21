@@ -37,22 +37,22 @@ export default function MinhasDividas() {
                 {/* Inputs */}
                 <View style={styles.inputContainer}>
                     <Text style={styles.inputLabel}>Lazer</Text>
-                    <TextInput style={styles.input} placeholder="Placeholder" />
+                    <TextInput style={styles.input} placeholder="Digite o seu gasto com lazer" />
                 </View>
 
                 <View style={styles.inputContainer}>
                     <Text style={styles.inputLabel}>Casa</Text>
-                    <TextInput style={styles.input} placeholder="Placeholder" />
+                    <TextInput style={styles.input} placeholder="Digite o seu gasto com Casa" />
                 </View>
 
                 <View style={styles.inputContainer}>
                     <Text style={styles.inputLabel}>estudos</Text>
-                    <TextInput style={styles.input} placeholder="Placeholder" />
+                    <TextInput style={styles.input} placeholder="Digite o seu gasto com estudos" />
                 </View>
 
                 <View style={styles.inputContainer}>
                     <Text style={styles.inputLabel}>transporte</Text>
-                    <TextInput style={styles.input} placeholder="Placeholder" />
+                    <TextInput style={styles.input} placeholder="Digite o seu gasto com transportes" />
                 </View>
 
                 {/* Gráfico de Pizza */}
