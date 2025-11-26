@@ -1,9 +1,11 @@
 import { router } from 'expo-router';
-import React, { useState } from 'react';
 import { useTheme } from './theme-context';
 
 
+import React, { useEffect, useState } from 'react';
 import {
+    ActivityIndicator,
+    Alert,
     ScrollView,
     Text,
     TextInput,
@@ -11,14 +13,22 @@ import {
     View,
 } from 'react-native';
 
-import { SafeAreaView } from 'react-native-safe-area-context';  // ✅ IMPORT CORRETO
 import { PieChart } from 'react-native-gifted-charts';
+import { SafeAreaView } from 'react-native-safe-area-context'; // ✅ IMPORT CORRETO
+import { useWallet } from '../frontend/hooks/useWallet';
 import { styles } from './minha-carteira.css.js';
 
 export default function MinhaCarteira() {
-
+    const { wallet, loading, updateWallet } = useWallet();
     const [salario, setSalario] = useState("");
     const [reserva, setReserva] = useState("");
+
+    useEffect(() => {
+        if (wallet) {
+            setSalario(wallet.salary.toString());
+            setReserva(wallet.emergencyReserve.toString());
+        }
+    }, [wallet]);
 
     const handleMenuPress = () => {
         router.push('/menu');
@@ -39,6 +49,35 @@ export default function MinhaCarteira() {
     const isDark = theme === 'dark';
 
 
+    const handleSave = async () => {
+        const salaryValue = parseFloat(salario) || 0;
+        const reserveValue = parseFloat(reserva) || 0;
+
+        if (salaryValue < 0 || reserveValue < 0) {
+            Alert.alert('Erro', 'Os valores não podem ser negativos');
+            return;
+        }
+
+        try {
+            await updateWallet({
+                salary: salaryValue,
+                emergencyReserve: reserveValue,
+            });
+            Alert.alert('Sucesso', 'Carteira salva com sucesso!');
+        } catch (error) {
+            Alert.alert('Erro', 'Não foi possível salvar a carteira');
+        }
+    };
+
+    if (loading && !wallet) {
+        return (
+            <SafeAreaView style={styles.container}>
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <ActivityIndicator size="large" />
+                </View>
+            </SafeAreaView>
+        );
+    }
 
     return (
         <SafeAreaView edges={['top']} style={styles.container}>
@@ -108,8 +147,16 @@ export default function MinhaCarteira() {
             </View>
 
             <View style={styles.footer}>
-                <TouchableOpacity style={styles.saveButton}>
-                    <Text style={styles.saveButtonText}>Salvar carteira</Text>
+                <TouchableOpacity 
+                    style={[styles.saveButton, loading && { opacity: 0.6 }]} 
+                    onPress={handleSave}
+                    disabled={loading}
+                >
+                    {loading ? (
+                        <ActivityIndicator color="#fff" />
+                    ) : (
+                        <Text style={styles.saveButtonText}>Salvar carteira</Text>
+                    )}
                 </TouchableOpacity>
             </View>
             <SafeAreaView style={[

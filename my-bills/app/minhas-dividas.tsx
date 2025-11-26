@@ -10,8 +10,8 @@ import {
     View,
 } from 'react-native';
 
-import { SafeAreaView } from 'react-native-safe-area-context';  // ✅ IMPORT CORRETO
 import { PieChart } from 'react-native-gifted-charts';
+import { SafeAreaView } from 'react-native-safe-area-context'; // ✅ IMPORT CORRETO
 import { styles } from './minhas-dividas.css.js';
 
 export default function MinhaCarteira() {

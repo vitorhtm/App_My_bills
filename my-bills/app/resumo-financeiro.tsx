@@ -6,12 +6,31 @@ import {
     Text,
     TouchableOpacity,
     View,
+    ActivityIndicator,
 } from 'react-native';
 import { styles } from './resumo-financeiro.css.js';
+import { useWallet } from '../frontend/hooks/useWallet';
+import { useExpenses } from '../frontend/hooks/useExpenses';
 
 export default function ResumoFinanceiro() {
+  const { wallet, loading: walletLoading } = useWallet();
+  const { totalExpenses, loading: expensesLoading } = useExpenses();
+
   const handleMenuPress = () => {
     router.push('/menu');
+  };
+
+  const handleNewExpense = () => {
+    router.push('/minhas-dividas');
+  };
+
+  const loading = walletLoading || expensesLoading;
+  const totalInWallet = wallet ? wallet.salary + wallet.emergencyReserve : 0;
+  const salary = wallet?.salary || 0;
+  const percentageSpent = salary > 0 ? Math.round((totalExpenses / salary) * 100) : 0;
+
+  const formatCurrency = (value: number) => {
+    return `R$ ${value.toFixed(2).replace('.', ',')}`;
   };
 
   return (
@@ -31,27 +50,39 @@ export default function ResumoFinanceiro() {
         {/* Título */}
         <Text style={styles.title}>Resumo financeiro</Text>
 
-        {/* Card Total Gasto */}
-        <View style={styles.card}>
-          <Text style={styles.cardLabel}>Total gasto</Text>
-          <Text style={styles.cardValueRed}>R$ 690.00</Text>
-        </View>
+        {loading ? (
+          <View style={{ padding: 20, alignItems: 'center' }}>
+            <ActivityIndicator size="large" />
+          </View>
+        ) : (
+          <>
+            {/* Card Total Gasto */}
+            <View style={styles.card}>
+              <Text style={styles.cardLabel}>Total gasto</Text>
+              <Text style={styles.cardValueRed}>{formatCurrency(totalExpenses)}</Text>
+            </View>
 
-        {/* Card Valor na Carteira */}
-        <View style={styles.card}>
-          <Text style={styles.cardLabel}>Valor na Carteira</Text>
-          <Text style={styles.cardValueGreen}>R$ 300.00</Text>
-        </View>
+            {/* Card Valor na Carteira */}
+            <View style={styles.card}>
+              <Text style={styles.cardLabel}>Valor na Carteira</Text>
+              <Text style={styles.cardValueGreen}>{formatCurrency(totalInWallet)}</Text>
+            </View>
 
-        {/* Banner Informativo */}
-        <View style={styles.banner}>
-          <Text style={styles.bannerText}>Você gastou 70% da sua renda esse mês</Text>
-        </View>
+            {/* Banner Informativo */}
+            {salary > 0 && (
+              <View style={styles.banner}>
+                <Text style={styles.bannerText}>
+                  Você gastou {percentageSpent}% da sua renda esse mês
+                </Text>
+              </View>
+            )}
+          </>
+        )}
       </ScrollView>
 
       {/* Botão Nova Despesa */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={handleNewExpense}>
           <Text style={styles.buttonText}>Nova despesa</Text>
         </TouchableOpacity>
       </View>
