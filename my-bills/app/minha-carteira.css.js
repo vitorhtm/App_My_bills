@@ -25,7 +25,6 @@ export const styles = StyleSheet.create({
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
   },
 
   headerIcon: {
@@ -56,7 +55,7 @@ export const styles = StyleSheet.create({
 
   contentContainer: {
     padding: 20,
-    paddingBottom: 60,
+    paddingBottom: 20,
   },
 
   title: {
@@ -100,7 +99,7 @@ export const styles = StyleSheet.create({
   chartContainer: {
     alignItems: 'center',
     marginTop: 30,
-    marginBottom: 50,
+    marginBottom: 20,
   },
 
   chartTitle: {
@@ -139,7 +138,10 @@ export const styles = StyleSheet.create({
   ----------------------------------------- */
   footer: {
     padding: 20,
+    paddingTop: 16,
     backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
   },
 
   saveButton: {

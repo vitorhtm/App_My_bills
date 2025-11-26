@@ -16,7 +16,6 @@ export const styles = StyleSheet.create({
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
   },
   headerIcon: {
     fontSize: 24,
@@ -68,7 +67,6 @@ export const styles = StyleSheet.create({
   menuItemLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
   },
   iconContainer: {
     width: 40,

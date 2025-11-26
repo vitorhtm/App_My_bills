@@ -17,5 +17,10 @@ export function ThemeProvider({ children }: any) {
 }
 
 export function useTheme() {
-  return useContext(ThemeContext);
+  const context = useContext(ThemeContext);
+  if (!context) {
+    // Fallback caso o ThemeProvider não esteja disponível
+    return { theme: 'light' as const, toggleTheme: () => {} };
+  }
+  return context;
 }

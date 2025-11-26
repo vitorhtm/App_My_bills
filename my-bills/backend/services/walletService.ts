@@ -1,5 +1,5 @@
 import { getDatabase } from '../database/db';
-import { Wallet, CreateWalletData } from '../models/types';
+import { CreateWalletData, Wallet } from '../models/types';
 
 export const getWallet = async (): Promise<Wallet | null> => {
   const database = await getDatabase();
@@ -50,5 +50,14 @@ export const getTotalInWallet = async (): Promise<number> => {
     return 0;
   }
   return wallet.salary + wallet.emergencyReserve;
+};
+
+export const resetWallet = async (): Promise<void> => {
+  try {
+    const database = await getDatabase();
+    await database.runAsync('DELETE FROM wallet');
+  } catch (error) {
+    throw error;
+  }
 };
 

@@ -25,7 +25,6 @@ export const styles = StyleSheet.create({
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
   },
 
   headerIcon: {
@@ -56,7 +55,7 @@ export const styles = StyleSheet.create({
 
   contentContainer: {
     padding: 20,
-    paddingBottom: 60,
+    paddingBottom: 100,
   },
 
   title: {
@@ -140,6 +139,15 @@ export const styles = StyleSheet.create({
   footer: {
     padding: 20,
     backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: -2 },
+    elevation: 5,
+    zIndex: 1000,
+    position: 'relative',
   },
 
   saveButton: {
@@ -159,5 +167,10 @@ export const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '700',
     letterSpacing: 0.4,
+  },
+
+  saveButtonDisabled: {
+    backgroundColor: '#90CAF9',
+    opacity: 0.7,
   },
 });

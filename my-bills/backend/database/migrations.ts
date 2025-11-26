@@ -23,15 +23,6 @@ export const runMigrations = async (): Promise<void> => {
     );
   `);
 
-  // Inserir registro inicial na wallet se não existir
-  const walletResult = await database.getFirstAsync<{ count: number }>(
-    'SELECT COUNT(*) as count FROM wallet'
-  );
-
-  if (walletResult && walletResult.count === 0) {
-    await database.runAsync(
-      'INSERT INTO wallet (salary, emergency_reserve) VALUES (0, 0)'
-    );
-  }
+  // NÃO criar registro inicial - a carteira só será criada quando o usuário adicionar valores
 };
 

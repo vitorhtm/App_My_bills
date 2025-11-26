@@ -10,56 +10,19 @@ export default function RootLayout() {
   useEffect(() => {
     // Inicializar banco de dados ao iniciar o app
     runMigrations().catch((error) => {
-      console.error('Erro ao inicializar banco de dados:', error);
+      // Erro silencioso ao inicializar banco
     });
 
     // Função global para acessar o banco pelo console
     if (typeof window !== 'undefined') {
       (window as any).viewDatabase = async () => {
         try {
-          console.log('\n📊 DADOS DA CARTEIRA:');
-          console.log('═'.repeat(60));
           const wallet = await walletService.getWallet();
-          if (wallet) {
-            console.table({
-              ID: wallet.id,
-              Salário: `R$ ${wallet.salary.toFixed(2)}`,
-              'Reserva de Emergência': `R$ ${wallet.emergencyReserve.toFixed(2)}`,
-              Total: `R$ ${(wallet.salary + wallet.emergencyReserve).toFixed(2)}`,
-              'Última atualização': wallet.updatedAt,
-            });
-          } else {
-            console.log('(Nenhum registro)');
-          }
-
-          console.log('\n📊 TODAS AS DESPESAS:');
-          console.log('═'.repeat(60));
           const expenses = await expenseService.getExpenses();
-          if (expenses.length > 0) {
-            console.table(expenses);
-          } else {
-            console.log('(Nenhuma despesa)');
-          }
-
-          console.log('\n📊 RESUMO POR CATEGORIA:');
-          console.log('═'.repeat(60));
           const byCategory = await expenseService.getExpensesByCategory();
-          if (byCategory.length > 0) {
-            console.table(byCategory);
-          } else {
-            console.log('(Nenhuma categoria)');
-          }
-
-          console.log('\n📊 TOTAL GERAL:');
-          console.log('═'.repeat(60));
           const total = await expenseService.getTotalExpenses();
-          console.log(`Total: R$ ${total.toFixed(2)}`);
-          console.log(`Quantidade: ${expenses.length} despesas`);
-
-          console.log('\n✅ Dados exibidos!');
           return { wallet, expenses, byCategory, total };
         } catch (error) {
-          console.error('❌ Erro:', error);
           throw error;
         }
       };
@@ -71,17 +34,14 @@ export default function RootLayout() {
         },
         async wallet() {
           const wallet = await walletService.getWallet();
-          console.table(wallet);
           return wallet;
         },
         async expenses() {
           const expenses = await expenseService.getExpenses();
-          console.table(expenses);
           return expenses;
         },
         async summary() {
           const summary = await expenseService.getExpensesByCategory();
-          console.table(summary);
           return summary;
         },
       };
@@ -90,58 +50,49 @@ export default function RootLayout() {
       (window as any).dbView = () => {
         (async () => {
           try {
-            console.log('\n📊 DADOS DA CARTEIRA:');
-            console.log('═'.repeat(60));
-            const wallet = await walletService.getWallet();
-            if (wallet) {
-              console.table({
-                ID: wallet.id,
-                Salário: `R$ ${wallet.salary.toFixed(2)}`,
-                'Reserva de Emergência': `R$ ${wallet.emergencyReserve.toFixed(2)}`,
-                Total: `R$ ${(wallet.salary + wallet.emergencyReserve).toFixed(2)}`,
-                'Última atualização': wallet.updatedAt,
-              });
-            } else {
-              console.log('(Nenhum registro)');
-            }
-
-            console.log('\n📊 TODAS AS DESPESAS:');
-            console.log('═'.repeat(60));
-            const expenses = await expenseService.getExpenses();
-            if (expenses.length > 0) {
-              console.table(expenses);
-            } else {
-              console.log('(Nenhuma despesa)');
-            }
-
-            console.log('\n📊 RESUMO POR CATEGORIA:');
-            console.log('═'.repeat(60));
-            const byCategory = await expenseService.getExpensesByCategory();
-            if (byCategory.length > 0) {
-              console.table(byCategory);
-            } else {
-              console.log('(Nenhuma categoria)');
-            }
-
-            console.log('\n📊 TOTAL GERAL:');
-            console.log('═'.repeat(60));
-            const total = await expenseService.getTotalExpenses();
-            console.log(`Total: R$ ${total.toFixed(2)}`);
-            console.log(`Quantidade: ${expenses.length} despesas`);
-
-            console.log('\n✅ Dados exibidos!');
+            await (window as any).viewDatabase();
           } catch (error) {
-            console.error('❌ Erro:', error);
+            // Erro silencioso
           }
         })();
       };
 
-      console.log('\n💡 Dicas para ver dados do banco:');
-      console.log('   - dbView() - Ver tudo (RECOMENDADO - sem await)');
-      console.log('   - await viewDatabase() - Ver tudo (com await)');
-      console.log('   - await db.wallet() - Ver carteira');
-      console.log('   - await db.expenses() - Ver despesas');
-      console.log('   - await db.summary() - Ver resumo\n');
+      // Função simples para limpar o banco
+      (window as any).clearDB = async () => {
+        try {
+          const { clearDatabase } = await import('../backend/services/databaseService');
+          await clearDatabase();
+        } catch (error) {
+          throw error;
+        }
+      };
+
+      // Função para adicionar dados de exemplo de setembro
+      (window as any).addSeptemberData = async () => {
+        try {
+          const { createExpenseWithDate } = await import('../backend/services/expenseService');
+          const currentYear = new Date().getFullYear();
+          
+          // Adicionar algumas despesas de setembro
+          const septemberExpenses: Array<{ category: 'lazer' | 'casa' | 'estudos' | 'transporte', amount: number, date: string }> = [
+            { category: 'lazer', amount: 250, date: `${currentYear}-09-05` },
+            { category: 'casa', amount: 1200, date: `${currentYear}-09-10` },
+            { category: 'estudos', amount: 350, date: `${currentYear}-09-15` },
+            { category: 'transporte', amount: 180, date: `${currentYear}-09-20` },
+            { category: 'lazer', amount: 150, date: `${currentYear}-09-25` },
+            { category: 'casa', amount: 450, date: `${currentYear}-09-28` },
+          ];
+          
+          for (const exp of septemberExpenses) {
+            await createExpenseWithDate(
+              { category: exp.category, amount: exp.amount },
+              exp.date
+            );
+          }
+        } catch (error) {
+          throw error;
+        }
+      };
     }
   }, []);
 

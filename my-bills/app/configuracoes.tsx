@@ -25,7 +25,7 @@ export default function Configuracoes() {
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Text style={[styles.headerIcon, { color: isDark ? '#fff' : '#000' }]}>$</Text>
-          <Text style={[styles.headerTitle, { color: isDark ? '#fff' : '#000' }]}>MyBills</Text>
+          <Text style={[styles.headerTitle, { color: isDark ? '#fff' : '#000', marginLeft: 8 }]}>MyBills</Text>
         </View>
 
         <TouchableOpacity onPress={handleMenuPress}>

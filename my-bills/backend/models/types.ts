@@ -30,3 +30,10 @@ export interface ExpenseByCategory {
   percentage: number;
 }
 
+export interface ExpenseByMonth {
+  month: string; // Formato: "YYYY-MM" (ex: "2024-01")
+  monthLabel: string; // Formato legível (ex: "Janeiro 2024")
+  total: number;
+  count: number;
+}
+
