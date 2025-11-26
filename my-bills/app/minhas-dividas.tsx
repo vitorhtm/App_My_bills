@@ -1,23 +1,51 @@
 import { router } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
+import { useTheme } from './theme-context';
+
 import {
-    SafeAreaView,
     ScrollView,
     Text,
     TextInput,
     TouchableOpacity,
     View,
 } from 'react-native';
+
+import { SafeAreaView } from 'react-native-safe-area-context';  // ✅ IMPORT CORRETO
+import { PieChart } from 'react-native-gifted-charts';
 import { styles } from './minhas-dividas.css.js';
 
-export default function MinhasDividas() {
+export default function MinhaCarteira() {
+
+    const [lazer, setLazer] = useState("");
+    const [casa, setCasa] = useState("");
+    const [estudos, setEstudos] = useState("");
+    const [transporte, setTransporte] = useState("");
+
     const handleMenuPress = () => {
         router.push('/menu');
     };
 
+    const lazerNum = Number(lazer.replace(",", ".")) || 0;
+    const casaNum = Number(casa.replace(",", ".")) || 0;
+    const estudosNum = Number(estudos.replace(",", ".")) || 0;
+    const transporteNum = Number(transporte.replace(",", ".")) || 0;
+
+    const total = lazerNum + casaNum + estudosNum + transporteNum;
+
+    const data = [
+        { value: lazerNum, color: '#af4c4cff', text: 'Lazer' },
+        { value: casaNum, color: '#0b07ffff', text: 'Casa' },
+        { value: estudosNum, color: '#4CAF50', text: 'Estudos' },
+        { value: transporteNum, color: '#FFC107', text: 'Transporte' },
+    ];
+
+    const { theme } = useTheme();
+
+    const isDark = theme === 'dark';
+
     return (
-        <SafeAreaView style={styles.container}>
-            {/* <StatusBar style="light" /> */}
+        <SafeAreaView edges={['top']} style={styles.container}>
+            {/* 🔥 Agora o conteúdo não fica atrás do notch */}
 
             {/* Header */}
             <View style={styles.header}>
@@ -37,43 +65,87 @@ export default function MinhasDividas() {
                 {/* Inputs */}
                 <View style={styles.inputContainer}>
                     <Text style={styles.inputLabel}>Lazer</Text>
-                    <TextInput style={styles.input} placeholder="Digite o seu gasto com lazer" />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Digite o seu gasto com lazer"
+                        keyboardType="numeric"
+                        value={lazer}
+                        onChangeText={(text) => setLazer(text.replace(/[^0-9,]/g, ""))}
+                    />
                 </View>
 
                 <View style={styles.inputContainer}>
                     <Text style={styles.inputLabel}>Casa</Text>
-                    <TextInput style={styles.input} placeholder="Digite o seu gasto com Casa" />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Digite o seu gasto com casa"
+                        keyboardType="numeric"
+                        value={casa}
+                        onChangeText={(text) => setCasa(text.replace(/[^0-9,]/g, ""))}
+                    />
                 </View>
 
                 <View style={styles.inputContainer}>
-                    <Text style={styles.inputLabel}>estudos</Text>
-                    <TextInput style={styles.input} placeholder="Digite o seu gasto com estudos" />
+                    <Text style={styles.inputLabel}>Estudos</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Digite o seu gasto com estudos"
+                        keyboardType="numeric"
+                        value={estudos}
+                        onChangeText={(text) => setEstudos(text.replace(/[^0-9,]/g, ""))}
+                    />
                 </View>
 
                 <View style={styles.inputContainer}>
-                    <Text style={styles.inputLabel}>transporte</Text>
-                    <TextInput style={styles.input} placeholder="Digite o seu gasto com transportes" />
+                    <Text style={styles.inputLabel}>Transporte</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Digite o seu gasto com transporte"
+                        keyboardType="numeric"
+                        value={transporte}
+                        onChangeText={(text) => setTransporte(text.replace(/[^0-9,]/g, ""))}
+                    />
                 </View>
 
-                {/* Gráfico de Pizza */}
                 <View style={styles.chartContainer}>
-                    <View style={styles.pieChart}>
-                        {/* Dívida 1 - 25% (área menor) */}
-                        <View style={styles.pieSlice1Container}>
-                            <View style={[styles.pieSlice, styles.pieSlice1]}>
-                                <Text style={styles.pieText1}>25%</Text>
-                                <Text style={styles.pieLabel1}>Dívida 1</Text>
-                            </View>
+
+                    <PieChart
+                        data={data}
+                        donut
+                        radius={80}
+                        innerRadius={40}
+                        textColor="black"
+                    />
+
+                    <View style={styles.legend}>
+                        <View style={styles.legendItem}>
+                            <View style={[styles.legendColor, { backgroundColor: '#e91f18ff' }]} />
+                            <Text style={styles.legendText}>
+                                Lazer ({total > 0 ? ((lazerNum / total) * 100).toFixed(0) : 0}%)
+                            </Text>
                         </View>
-                        {/* Dívida 2 - 75% (área maior) */}
-                        <View style={styles.pieSlice2Container}>
-                            <View style={[styles.pieSlice, styles.pieSlice2]}>
-                                <Text style={styles.pieText2}>75%</Text>
-                                <Text style={styles.pieLabel2}>Dívida 2</Text>
-                            </View>
+
+                        <View style={styles.legendItem}>
+                            <View style={[styles.legendColor, { backgroundColor: '#0b07ffff' }]} />
+                            <Text style={styles.legendText}>
+                                Casa ({total > 0 ? ((casaNum / total) * 100).toFixed(0) : 0}%)
+                            </Text>
+                        </View>
+                        <View style={styles.legendItem}>
+                            <View style={[styles.legendColor, { backgroundColor: '#4CAF50' }]} />
+                            <Text style={styles.legendText}>
+                                Estudos ({total > 0 ? ((estudosNum / total) * 100).toFixed(0) : 0}%)
+                            </Text>
+                        </View>
+                        <View style={styles.legendItem}>
+                            <View style={[styles.legendColor, { backgroundColor: '#FFC107' }]} />
+                            <Text style={styles.legendText}>
+                                Transporte ({total > 0 ? ((transporteNum / total) * 100).toFixed(0) : 0}%)
+                            </Text>
                         </View>
                     </View>
                 </View>
+
             </ScrollView>
 
             {/* Botão Salvar */}
@@ -81,7 +153,13 @@ export default function MinhasDividas() {
                 <TouchableOpacity style={styles.saveButton}>
                     <Text style={styles.saveButtonText}>Salvar despesa</Text>
                 </TouchableOpacity>
-            </View>
+            </View>      <SafeAreaView style={[
+                styles.container,
+                { backgroundColor: isDark ? '#121212' : '#F5F7FA' }
+            ]}>
+
+            </SafeAreaView>
+
         </SafeAreaView>
     );
 }

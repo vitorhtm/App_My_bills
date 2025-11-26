@@ -55,6 +55,8 @@ export default function ResumoFinanceiro() {
           <Text style={styles.buttonText}>Nova despesa</Text>
         </TouchableOpacity>
       </View>
+
+      
     </SafeAreaView>
   );
 }

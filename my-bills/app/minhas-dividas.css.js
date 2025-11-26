@@ -3,140 +3,161 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#F5F7FA',
   },
+
+  /* -----------------------------------------
+     HEADER MODERNO
+  ----------------------------------------- */
   header: {
     backgroundColor: '#1E88E5',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
   },
+
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 10,
   },
+
   headerIcon: {
-    fontSize: 24,
+    fontSize: 28,
     color: '#fff',
     fontWeight: 'bold',
   },
+
   headerTitle: {
-    fontSize: 20,
+    fontSize: 22,
     color: '#fff',
-    fontWeight: 'bold',
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
+
   menuIcon: {
-    fontSize: 24,
+    fontSize: 28,
     color: '#fff',
     fontWeight: 'bold',
   },
+
+  /* -----------------------------------------
+     CONTEÚDO
+  ----------------------------------------- */
   content: {
     flex: 1,
   },
+
   contentContainer: {
-    padding: 16,
+    padding: 20,
+    paddingBottom: 60,
   },
+
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 24,
-    color: '#000',
+    fontSize: 30,
+    fontWeight: '700',
+    marginBottom: 32,
+    color: '#1A1A1A',
   },
+
+  /* -----------------------------------------
+     INPUTS MODERNOS
+  ----------------------------------------- */
   inputContainer: {
-    marginBottom: 16,
+    marginBottom: 20,
   },
+
   inputLabel: {
-    fontSize: 14,
+    fontSize: 15,
     marginBottom: 8,
-    color: '#666',
+    color: '#444',
+    fontWeight: '600',
   },
+
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
+    borderColor: '#DDE3EB',
+    borderRadius: 12,
+    padding: 14,
     fontSize: 16,
     backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 1,
   },
+
+  /* -----------------------------------------
+     GRÁFICO E LEGENDA
+  ----------------------------------------- */
   chartContainer: {
     alignItems: 'center',
-    marginVertical: 32,
+    marginTop: 30,
+    marginBottom: 50,
   },
-  pieChart: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    position: 'relative',
+
+  chartTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 20,
+    color: '#1A1A1A',
+  },
+
+  legend: {
+    marginTop: 20,
+    width: '80%',
+  },
+
+  legendItem: {
     flexDirection: 'row',
-    overflow: 'hidden',
-    backgroundColor: '#1565C0',
-  },
-  pieSlice1Container: {
-    width: '25%',
-    height: '100%',
-    overflow: 'hidden',
-  },
-  pieSlice2Container: {
-    width: '75%',
-    height: '100%',
-    overflow: 'hidden',
-  },
-  pieSlice: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
     alignItems: 'center',
-    padding: 8,
+    marginBottom: 10,
   },
-  pieSlice1: {
-    backgroundColor: '#80CBC4',
-    borderTopLeftRadius: 100,
-    borderBottomLeftRadius: 100,
+
+  legendColor: {
+    width: 20,
+    height: 20,
+    borderRadius: 6,
+    marginRight: 10,
   },
-  pieSlice2: {
-    backgroundColor: '#1565C0',
-    borderTopRightRadius: 100,
-    borderBottomRightRadius: 100,
-  },
-  pieText1: {
+
+  legendText: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 4,
+    color: '#333',
+    fontWeight: '500',
   },
-  pieText2: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 4,
-  },
-  pieLabel1: {
-    fontSize: 12,
-    color: '#fff',
-    fontWeight: '600',
-  },
-  pieLabel2: {
-    fontSize: 12,
-    color: '#fff',
-    fontWeight: '600',
-  },
+
+  /* -----------------------------------------
+     BOTÃO FINAL
+  ----------------------------------------- */
   footer: {
-    padding: 16,
+    padding: 20,
     backgroundColor: '#fff',
   },
+
   saveButton: {
-    backgroundColor: '#1565C0',
-    borderRadius: 8,
-    padding: 16,
+    backgroundColor: '#1E88E5',
+    borderRadius: 12,
+    padding: 18,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 3,
   },
+
   saveButtonText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 17,
+    fontWeight: '700',
+    letterSpacing: 0.4,
   },
 });
-
