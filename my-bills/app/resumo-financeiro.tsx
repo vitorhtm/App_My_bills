@@ -8,7 +8,7 @@ import {
     View,
     ActivityIndicator,
 } from 'react-native';
-import { styles } from './resumo-financeiro.css.js';
+import { styles } from './resumo-financeiro.css'; // reutiliza o CSS das dívidas para manter o mesmo estilo
 import { useWallet } from '../frontend/hooks/useWallet';
 import { useExpenses } from '../frontend/hooks/useExpenses';
 import { useTheme } from './theme-context';
@@ -31,14 +31,39 @@ export default function ResumoFinanceiro() {
   const totalInWallet = wallet ? wallet.salary + wallet.emergencyReserve : 0;
   const salary = wallet?.salary || 0;
   
-  // Pegar o total do mês atual
-  const currentMonth = new Date().toISOString().slice(0, 7); // "YYYY-MM"
+  // Pegar o total do mês atual ("YYYY-MM")
+  const currentMonth = new Date().toISOString().slice(0, 7);
   const currentMonthExpenses = expensesByMonth.find(m => m.month === currentMonth);
   const monthTotal = currentMonthExpenses?.total || 0;
   const percentageSpent = salary > 0 ? Math.round((monthTotal / salary) * 100) : 0;
 
   const formatCurrency = (value: number) => {
     return `R$ ${value.toFixed(2).replace('.', ',')}`;
+  };
+
+  // Nova paleta / ícones conforme solicitado
+  const cardDefs = {
+    totalGasto: {
+      label: 'Total gasto',
+      icon: '🔥',
+      color: '#FF6B6B',
+      bgLight: '#FFF5F5',
+      bgDark: '#2D1F1F',
+    },
+    carteira: {
+      label: 'Valor na carteira',
+      icon: '💰',
+      color: '#4CAF50',
+      bgLight: '#F0FFF4',
+      bgDark: '#1F2D1F',
+    },
+    saldo: {
+      label: 'Saldo restante',
+      icon: '🏦',
+      color: '#FFC107',
+      bgLight: '#FFFBEA',
+      bgDark: '#2D2A1F',
+    }
   };
 
   return (
@@ -64,25 +89,71 @@ export default function ResumoFinanceiro() {
           </View>
         ) : (
           <>
-            {/* Card Total Gasto */}
-            <View style={[styles.card, { backgroundColor: isDark ? '#1E1E1E' : '#fff', borderColor: isDark ? '#444' : '#f0f0f0' }]}>
-              <Text style={[styles.cardLabel, { color: isDark ? '#B0B0B0' : '#000' }]}>Total gasto</Text>
-              <Text style={styles.cardValueRed}>{formatCurrency(totalExpenses)}</Text>
+            {/* Card Total Gasto (estilizado) */}
+            <View style={{
+              backgroundColor: isDark ? cardDefs.totalGasto.bgDark : cardDefs.totalGasto.bgLight,
+              borderRadius: 12,
+              padding: 16,
+              borderWidth: 1,
+              borderColor: isDark ? '#444' : '#f0f0f0',
+              marginBottom: 12,
+            }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                <View style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 18,
+                  backgroundColor: cardDefs.totalGasto.color,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginRight: 12,
+                }}>
+                  <Text style={{ fontSize: 18 }}>{cardDefs.totalGasto.icon}</Text>
+                </View>
+                <Text style={{ color: cardDefs.totalGasto.color, fontWeight: '600', fontSize: 16 }}>
+                  {cardDefs.totalGasto.label}
+                </Text>
+              </View>
+
+              <Text style={[styles.cardValueRed, { marginTop: 6 }]}>{formatCurrency(totalExpenses)}</Text>
             </View>
 
-            {/* Card Valor na Carteira */}
-            <View style={[styles.card, { backgroundColor: isDark ? '#1E1E1E' : '#fff', borderColor: isDark ? '#444' : '#f0f0f0' }]}>
-              <Text style={[styles.cardLabel, { color: isDark ? '#B0B0B0' : '#000' }]}>Valor na Carteira</Text>
+            {/* Card Valor na Carteira (estilizado com seu ícone/cor) */}
+            <View style={{
+              backgroundColor: isDark ? cardDefs.carteira.bgDark : cardDefs.carteira.bgLight,
+              borderRadius: 12,
+              padding: 16,
+              borderWidth: 1,
+              borderColor: isDark ? '#444' : '#f0f0f0',
+              marginBottom: 12,
+            }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                <View style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 18,
+                  backgroundColor: cardDefs.carteira.color,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginRight: 12,
+                }}>
+                  <Text style={{ fontSize: 18 }}>{cardDefs.carteira.icon}</Text>
+                </View>
+                <Text style={{ color: cardDefs.carteira.color, fontWeight: '600', fontSize: 16 }}>
+                  {cardDefs.carteira.label}
+                </Text>
+              </View>
+
               <Text style={styles.cardValueGreen}>{formatCurrency(totalInWallet)}</Text>
             </View>
 
-            {/* Card de Saldo Restante */}
+            {/* Card de Saldo Restante (estilizado com ícone/cor solicitados) */}
             {salary > 0 && (
               <View style={{
                 backgroundColor: isDark ? '#1E1E1E' : '#fff',
                 borderRadius: 12,
                 padding: 20,
-                marginTop: 16,
+                marginTop: 12,
                 borderWidth: 1,
                 borderColor: isDark ? '#444' : '#e0e0e0',
                 shadowColor: '#000',
@@ -92,7 +163,23 @@ export default function ResumoFinanceiro() {
                 elevation: 3,
               }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                  <Text style={{ fontSize: 16, fontWeight: '600', color: isDark ? '#B0B0B0' : '#666' }}>Saldo restante este mês</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 18,
+                      backgroundColor: cardDefs.saldo.color,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      marginRight: 12,
+                    }}>
+                      <Text style={{ fontSize: 18 }}>{cardDefs.saldo.icon}</Text>
+                    </View>
+                    <Text style={{ fontSize: 16, fontWeight: '600', color: isDark ? '#B0B0B0' : '#666' }}>
+                      Saldo restante este mês
+                    </Text>
+                  </View>
+
                   <Text style={{
                     fontSize: 24,
                     fontWeight: '700',
@@ -101,40 +188,40 @@ export default function ResumoFinanceiro() {
                     {formatCurrency(salary - monthTotal)}
                   </Text>
                 </View>
-                {salary > 0 && (
-                  <>
-                    <View style={{
-                      height: 8,
-                      backgroundColor: isDark ? '#2D2D2D' : '#f0f0f0',
-                      borderRadius: 4,
-                      overflow: 'hidden',
-                      marginBottom: 8,
-                    }}>
-                      <View style={{
-                        height: '100%',
-                        width: `${Math.min(percentageSpent, 100)}%`,
-                        backgroundColor: percentageSpent > 80 ? '#f44336' : percentageSpent > 50 ? '#FF9800' : '#4CAF50',
-                        borderRadius: 4,
-                      }} />
-                    </View>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                      <Text style={{ fontSize: 12, color: isDark ? '#B0B0B0' : '#666' }}>
-                        Gasto: {formatCurrency(monthTotal)}
-                      </Text>
-                      <Text style={{ fontSize: 12, color: isDark ? '#B0B0B0' : '#666' }}>
-                        {percentageSpent}% da renda
-                      </Text>
-                    </View>
-                  </>
-                )}
+
+                {/* Barra de progresso */}
+                <View style={{
+                  height: 8,
+                  backgroundColor: isDark ? '#2D2D2D' : '#f0f0f0',
+                  borderRadius: 4,
+                  overflow: 'hidden',
+                  marginBottom: 8,
+                }}>
+                  <View style={{
+                    height: '100%',
+                    width: `${Math.min(percentageSpent, 100)}%`,
+                    backgroundColor: percentageSpent > 80 ? '#f44336' : percentageSpent > 50 ? '#FF9800' : '#4CAF50',
+                    borderRadius: 4,
+                  }} />
+                </View>
+
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <Text style={{ fontSize: 12, color: isDark ? '#B0B0B0' : '#666' }}>
+                    Gasto: {formatCurrency(monthTotal)}
+                  </Text>
+                  <Text style={{ fontSize: 12, color: isDark ? '#B0B0B0' : '#666' }}>
+                    {percentageSpent}% da renda
+                  </Text>
+                </View>
               </View>
             )}
 
-            {/* Banner Informativo */}
+            {/* Banner informativo (mantém lógica de aviso, com visual coerente) */}
             {salary > 0 && monthTotal > 0 && (
               <View style={[styles.banner, {
                 backgroundColor: percentageSpent > 80 ? '#FFF3E0' : percentageSpent > 50 ? '#FFF9C4' : '#E8F5E9',
                 borderLeftColor: percentageSpent > 80 ? '#f44336' : percentageSpent > 50 ? '#FF9800' : '#4CAF50',
+                marginTop: 12,
               }]}>
                 <Text style={[styles.bannerText, {
                   color: percentageSpent > 80 ? '#d32f2f' : percentageSpent > 50 ? '#F57C00' : '#2E7D32',
@@ -150,15 +237,15 @@ export default function ResumoFinanceiro() {
               </View>
             )}
 
-            {/* Comparativo Mensal */}
+            {/* Comparativo Mensal - com cards no mesmo estilo */}
             {expensesByMonth.length > 0 && (
               <View style={{ marginTop: 24 }}>
                 <Text style={{ fontSize: 20, fontWeight: '700', marginBottom: 16, color: isDark ? '#fff' : '#000' }}>
                   Comparativo Mensal
                 </Text>
-                {expensesByMonth.map((item, index) => {
+                {expensesByMonth.map((item) => {
                   const isCurrentMonth = item.month === currentMonth;
-                  
+
                   return (
                     <View key={item.month} style={{
                       flexDirection: 'row',
@@ -173,7 +260,7 @@ export default function ResumoFinanceiro() {
                       borderWidth: isCurrentMonth ? 2 : 1,
                       borderColor: isCurrentMonth ? '#1E88E5' : (isDark ? '#444' : '#e0e0e0'),
                       borderLeftWidth: 4,
-                      borderLeftColor: '#E53935',
+                      borderLeftColor: isCurrentMonth ? '#1E88E5' : '#E53935',
                       shadowColor: '#000',
                       shadowOffset: { width: 0, height: 2 },
                       shadowOpacity: isDark ? 0.3 : 0.1,
@@ -212,7 +299,7 @@ export default function ResumoFinanceiro() {
               </View>
             )}
 
-            {/* Mensagem quando não há despesas */}
+            {/* Mensagem quando não há despesas por mês */}
             {expensesByMonth.length === 0 && (
               <View style={{ marginTop: 24, padding: 20, alignItems: 'center' }}>
                 <Text style={{ fontSize: 16, color: isDark ? '#B0B0B0' : '#666', textAlign: 'center' }}>
@@ -227,15 +314,12 @@ export default function ResumoFinanceiro() {
         )}
       </ScrollView>
 
-      {/* Botão Nova Despesa */}
+      {/* Botão Nova Despesa (mantém padrão visual) */}
       <View style={[styles.footer, { backgroundColor: isDark ? '#1E1E1E' : '#fff' }]}>
         <TouchableOpacity style={styles.button} onPress={handleNewExpense}>
           <Text style={styles.buttonText}>Nova despesa</Text>
         </TouchableOpacity>
       </View>
-
-      
     </SafeAreaView>
   );
 }
-

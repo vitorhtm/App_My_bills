@@ -13,13 +13,15 @@ import {
 import { PieChart } from 'react-native-gifted-charts';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useWallet } from '../frontend/hooks/useWallet';
-import { styles } from './minha-carteira.css.js';
 import { useTheme } from './theme-context';
+import { styles } from './minhas-dividas.css.js'; // reutiliza o CSS da tela de dívidas
 
 export default function MinhaCarteira() {
+
     const { wallet, loading, updateWallet } = useWallet();
     const { theme } = useTheme();
     const isDark = theme === 'dark';
+
     const [salario, setSalario] = useState("");
     const [reserva, setReserva] = useState("");
 
@@ -27,10 +29,6 @@ export default function MinhaCarteira() {
         if (wallet) {
             setSalario(wallet.salary > 0 ? wallet.salary.toString() : "");
             setReserva(wallet.emergencyReserve > 0 ? wallet.emergencyReserve.toString() : "");
-        } else {
-            // Se não há carteira, deixar campos vazios
-            setSalario("");
-            setReserva("");
         }
     }, [wallet]);
 
@@ -40,58 +38,61 @@ export default function MinhaCarteira() {
 
     const salarioNum = Number(salario.replace(",", ".")) || 0;
     const reservaNum = Number(reserva.replace(",", ".")) || 0;
-
     const total = salarioNum + reservaNum;
 
-    // Gráfico só mostra dados quando há valores maiores que zero
+    const categoryStyles = {
+        salario: {
+            label: "Salário",
+            color: "#4CAF50",
+            icon: "💰",
+            bgLight: "#F0FFF4",
+            bgDark: "#1F2D1F"
+        },
+        reserva: {
+            label: "Reserva",
+            color: "#FFC107",
+            icon: "🏦",
+            bgLight: "#FFFBEA",
+            bgDark: "#2D2A1F"
+        }
+    };
+
     const data = [
-        ...(salarioNum > 0 ? [{ value: salarioNum, color: '#4CAF50', text: 'Salário' }] : []),
-        ...(reservaNum > 0 ? [{ value: reservaNum, color: '#FFC107', text: 'Reserva' }] : []),
+        ...(salarioNum > 0 ? [{ value: salarioNum, color: categoryStyles.salario.color, text: "Salário" }] : []),
+        ...(reservaNum > 0 ? [{ value: reservaNum, color: categoryStyles.reserva.color, text: "Reserva" }] : []),
     ];
 
-
-
     const handleSave = async () => {
-        // Converter valores de forma segura
-        const parseValue = (value: string): number => {
-            if (!value || value.trim() === '') return 0;
-            const cleaned = value.replace(",", ".").replace(/[^0-9.]/g, "");
-            if (!cleaned || cleaned === '') return 0;
-            const num = parseFloat(cleaned);
-            return isNaN(num) || num < 0 ? 0 : num;
-        };
+        const sanitize = (v: string) => parseFloat(v.replace(",", ".").replace(/[^0-9.]/g, "")) || 0;
 
-        const salaryValue = parseValue(salario);
-        const reserveValue = parseValue(reserva);
+        const sal = sanitize(salario);
+        const res = sanitize(reserva);
 
-        if (salaryValue === 0 && reserveValue === 0) {
-            Alert.alert('Atenção', 'Digite pelo menos um valor para salvar a carteira.');
+        if (sal === 0 && res === 0) {
+            Alert.alert("Atenção", "Digite pelo menos um valor.");
             return;
         }
 
         try {
             await updateWallet({
-                salary: salaryValue,
-                emergencyReserve: reserveValue,
+                salary: sal,
+                emergencyReserve: res,
             });
-            Alert.alert('Sucesso', 'Carteira salva com sucesso!');
-        } catch (error) {
-            Alert.alert('Erro', 'Não foi possível salvar a carteira. Tente novamente.');
+            Alert.alert("Sucesso", "Carteira salva!");
+        } catch {
+            Alert.alert("Erro", "Não foi possível salvar.");
         }
     };
 
-    if (loading && !wallet) {
-        return (
-            <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#121212' : '#F5F7FA' }]}>
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <ActivityIndicator size="large" color={isDark ? '#fff' : '#000'} />
-                </View>
-            </SafeAreaView>
-        );
-    }
-
     return (
-        <SafeAreaView edges={['top']} style={[styles.container, { backgroundColor: isDark ? '#121212' : '#F5F7FA' }]}>
+        <SafeAreaView
+            edges={['top', 'bottom']}
+            style={[
+                styles.container,
+                { backgroundColor: isDark ? '#121212' : '#F5F7FA' }
+            ]}
+        >
+            {/* Header */}
             <View style={styles.header}>
                 <View style={styles.headerLeft}>
                     <Text style={styles.headerIcon}>$</Text>
@@ -102,45 +103,117 @@ export default function MinhaCarteira() {
                 </TouchableOpacity>
             </View>
 
-            <ScrollView 
-                style={[styles.content, { backgroundColor: isDark ? '#121212' : '#F5F7FA' }]} 
+            <ScrollView
+                style={[
+                    styles.content,
+                    { backgroundColor: isDark ? '#121212' : '#F5F7FA' }
+                ]}
                 contentContainerStyle={styles.contentContainer}
                 showsVerticalScrollIndicator={false}
             >
-                <Text style={[styles.title, { color: isDark ? '#fff' : '#1A1A1A' }]}>Minha carteira</Text>
+                <Text style={[styles.title, { color: isDark ? '#fff' : '#1A1A1A' }]}>
+                    Minha carteira
+                </Text>
 
-                <View style={styles.inputContainer}>
-                    <Text style={[styles.inputLabel, { color: isDark ? '#B0B0B0' : '#444' }]}>Salário</Text>
+                {/* Card SALÁRIO */}
+                <View style={{
+                    backgroundColor: isDark ? categoryStyles.salario.bgDark : categoryStyles.salario.bgLight,
+                    borderRadius: 12,
+                    padding: 16,
+                    borderWidth: salario ? 2 : 1,
+                    borderColor: salario ? categoryStyles.salario.color : (isDark ? '#444' : '#e0e0e0'),
+                    marginBottom: 12,
+                }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                        <View style={{
+                            width: 36,
+                            height: 36,
+                            borderRadius: 18,
+                            backgroundColor: categoryStyles.salario.color,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            marginRight: 12,
+                        }}>
+                            <Text style={{ fontSize: 18 }}>{categoryStyles.salario.icon}</Text>
+                        </View>
+
+                        <Text style={{
+                            color: categoryStyles.salario.color,
+                            fontWeight: '600',
+                            fontSize: 16
+                        }}>
+                            Salário
+                        </Text>
+                    </View>
+
                     <TextInput
-                        style={[styles.input, {
+                        style={{
+                            borderWidth: 1,
+                            borderColor: categoryStyles.salario.color,
+                            borderRadius: 12,
+                            padding: 14,
+                            fontSize: 16,
                             backgroundColor: isDark ? '#1E1E1E' : '#fff',
-                            borderColor: isDark ? '#444' : '#DDE3EB',
                             color: isDark ? '#fff' : '#000',
-                        }]}
-                        placeholder="Digite o seu salário"
+                        }}
+                        placeholder="Digite o valor"
                         placeholderTextColor={isDark ? '#888' : '#999'}
                         keyboardType="numeric"
                         value={salario}
-                        onChangeText={(text) => setSalario(text.replace(/[^0-9,]/g, ""))}
+                        onChangeText={(t) => setSalario(t.replace(/[^0-9,]/g, ""))}
                     />
                 </View>
 
-                <View style={styles.inputContainer}>
-                    <Text style={[styles.inputLabel, { color: isDark ? '#B0B0B0' : '#444' }]}>Reserva de emergência</Text>
+                {/* Card RESERVA */}
+                <View style={{
+                    backgroundColor: isDark ? categoryStyles.reserva.bgDark : categoryStyles.reserva.bgLight,
+                    borderRadius: 12,
+                    padding: 16,
+                    borderWidth: reserva ? 2 : 1,
+                    borderColor: reserva ? categoryStyles.reserva.color : (isDark ? '#444' : '#e0e0e0'),
+                    marginBottom: 12,
+                }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                        <View style={{
+                            width: 36,
+                            height: 36,
+                            borderRadius: 18,
+                            backgroundColor: categoryStyles.reserva.color,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            marginRight: 12,
+                        }}>
+                            <Text style={{ fontSize: 18 }}>{categoryStyles.reserva.icon}</Text>
+                        </View>
+
+                        <Text style={{
+                            color: categoryStyles.reserva.color,
+                            fontWeight: '600',
+                            fontSize: 16
+                        }}>
+                            Reserva de emergência
+                        </Text>
+                    </View>
+
                     <TextInput
-                        style={[styles.input, {
+                        style={{
+                            borderWidth: 1,
+                            borderColor: categoryStyles.reserva.color,
+                            borderRadius: 12,
+                            padding: 14,
+                            fontSize: 16,
                             backgroundColor: isDark ? '#1E1E1E' : '#fff',
-                            borderColor: isDark ? '#444' : '#DDE3EB',
                             color: isDark ? '#fff' : '#000',
-                        }]}
+                        }}
                         placeholder="Digite o saldo da reserva"
                         placeholderTextColor={isDark ? '#888' : '#999'}
                         keyboardType="numeric"
                         value={reserva}
-                        onChangeText={(text) => setReserva(text.replace(/[^0-9,]/g, ""))}
+                        onChangeText={(t) => setReserva(t.replace(/[^0-9,]/g, ""))}
                     />
                 </View>
 
+                {/* Gráfico */}
                 <View style={styles.chartContainer}>
                     {total > 0 ? (
                         <PieChart
@@ -151,34 +224,76 @@ export default function MinhaCarteira() {
                             textColor={isDark ? '#fff' : 'black'}
                         />
                     ) : (
-                        <View style={{ width: 160, height: 160, justifyContent: 'center', alignItems: 'center', borderRadius: 80, backgroundColor: isDark ? '#2D2D2D' : '#f5f5f5' }}>
-                            <Text style={{ color: isDark ? '#888' : '#666', fontSize: 14, textAlign: 'center', padding: 20 }}>
+                        <View style={{
+                            width: 160,
+                            height: 160,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            borderRadius: 80,
+                            backgroundColor: isDark ? '#2D2D2D' : '#f5f5f5'
+                        }}>
+                            <Text style={{
+                                color: isDark ? '#888' : '#999',
+                                fontSize: 14,
+                                textAlign: 'center',
+                                padding: 20
+                            }}>
                                 Adicione valores para ver o gráfico
                             </Text>
                         </View>
                     )}
 
+                    {/* Legendas */}
                     <View style={styles.legend}>
-                        <View style={styles.legendItem}>
-                            <View style={[styles.legendColor, { backgroundColor: '#4CAF50' }]} />
-                            <Text style={[styles.legendText, { color: isDark ? '#fff' : '#333' }]}>
-                                Salário ({total > 0 ? ((salarioNum / total) * 100).toFixed(0) : 0}%)
-                            </Text>
-                        </View>
+                        {salarioNum > 0 && (
+                            <View style={styles.legendItem}>
+                                <View style={{
+                                    width: 20,
+                                    height: 20,
+                                    borderRadius: 10,
+                                    backgroundColor: categoryStyles.salario.color,
+                                    marginRight: 10,
+                                }} />
+                                <Text style={[
+                                    styles.legendText,
+                                    { color: isDark ? '#fff' : '#333' }
+                                ]}>
+                                    💰 Salário ({((salarioNum / total) * 100).toFixed(0)}%)
+                                </Text>
+                            </View>
+                        )}
 
-                        <View style={styles.legendItem}>
-                            <View style={[styles.legendColor, { backgroundColor: '#FFC107' }]} />
-                            <Text style={[styles.legendText, { color: isDark ? '#fff' : '#333' }]}>
-                                Reserva ({total > 0 ? ((reservaNum / total) * 100).toFixed(0) : 0}%)
-                            </Text>
-                        </View>
+                        {reservaNum > 0 && (
+                            <View style={styles.legendItem}>
+                                <View style={{
+                                    width: 20,
+                                    height: 20,
+                                    borderRadius: 10,
+                                    backgroundColor: categoryStyles.reserva.color,
+                                    marginRight: 10,
+                                }} />
+                                <Text style={[
+                                    styles.legendText,
+                                    { color: isDark ? '#fff' : '#333' }
+                                ]}>
+                                    🏦 Reserva ({((reservaNum / total) * 100).toFixed(0)}%)
+                                </Text>
+                            </View>
+                        )}
                     </View>
                 </View>
             </ScrollView>
 
-            <SafeAreaView edges={['bottom']} style={[styles.footer, { backgroundColor: isDark ? '#1E1E1E' : '#fff', borderTopColor: isDark ? '#444' : '#E0E0E0' }]}>
-                <TouchableOpacity 
-                    style={[styles.saveButton, loading && { opacity: 0.6 }]} 
+            {/* Footer */}
+            <View style={[
+                styles.footer,
+                {
+                    backgroundColor: isDark ? '#1E1E1E' : '#fff',
+                    borderTopColor: isDark ? '#444' : '#E0E0E0'
+                }
+            ]}>
+                <TouchableOpacity
+                    style={[styles.saveButton, loading && { opacity: 0.6 }]}
                     onPress={handleSave}
                     disabled={loading}
                 >
@@ -188,7 +303,7 @@ export default function MinhaCarteira() {
                         <Text style={styles.saveButtonText}>Salvar carteira</Text>
                     )}
                 </TouchableOpacity>
-            </SafeAreaView>
+            </View>
         </SafeAreaView>
     );
 }
