@@ -1,14 +1,14 @@
 import { router } from 'expo-router';
 import React from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-    SafeAreaView,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View,
-    ActivityIndicator,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+  ActivityIndicator,
 } from 'react-native';
-import { styles } from './resumo-financeiro.css'; // reutiliza o CSS das dívidas para manter o mesmo estilo
+import { styles } from './resumo-financeiro.css';
 import { useWallet } from '../frontend/hooks/useWallet';
 import { useExpenses } from '../frontend/hooks/useExpenses';
 import { useTheme } from './theme-context';
@@ -30,8 +30,7 @@ export default function ResumoFinanceiro() {
   const loading = walletLoading || expensesLoading;
   const totalInWallet = wallet ? wallet.salary + wallet.emergencyReserve : 0;
   const salary = wallet?.salary || 0;
-  
-  // Pegar o total do mês atual ("YYYY-MM")
+
   const currentMonth = new Date().toISOString().slice(0, 7);
   const currentMonthExpenses = expensesByMonth.find(m => m.month === currentMonth);
   const monthTotal = currentMonthExpenses?.total || 0;
@@ -41,7 +40,6 @@ export default function ResumoFinanceiro() {
     return `R$ ${value.toFixed(2).replace('.', ',')}`;
   };
 
-  // Nova paleta / ícones conforme solicitado
   const cardDefs = {
     totalGasto: {
       label: 'Total gasto',
@@ -67,7 +65,14 @@ export default function ResumoFinanceiro() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#121212' : '#fff' }]}>
+    <SafeAreaView
+      edges={['top', 'bottom']}
+      style={[
+        styles.container,
+        { backgroundColor: isDark ? '#121212' : '#fff' }
+      ]}
+    >
+
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
@@ -79,9 +84,21 @@ export default function ResumoFinanceiro() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={[styles.content, { backgroundColor: isDark ? '#121212' : '#fff' }]} contentContainerStyle={styles.contentContainer}>
-        {/* Título */}
-        <Text style={[styles.title, { color: isDark ? '#fff' : '#000' }]}>Resumo financeiro</Text>
+      <ScrollView
+        style={[
+          styles.content,
+          { backgroundColor: isDark ? '#121212' : '#fff' }
+        ]}
+        contentContainerStyle={[
+          styles.contentContainer,
+          { paddingBottom: 40 }
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
+
+        <Text style={[styles.title, { color: isDark ? '#fff' : '#000' }]}>
+          Resumo financeiro
+        </Text>
 
         {loading ? (
           <View style={{ padding: 20, alignItems: 'center' }}>
@@ -89,7 +106,7 @@ export default function ResumoFinanceiro() {
           </View>
         ) : (
           <>
-            {/* Card Total Gasto (estilizado) */}
+            {/* Card Total gasto */}
             <View style={{
               backgroundColor: isDark ? cardDefs.totalGasto.bgDark : cardDefs.totalGasto.bgLight,
               borderRadius: 12,
@@ -115,10 +132,12 @@ export default function ResumoFinanceiro() {
                 </Text>
               </View>
 
-              <Text style={[styles.cardValueRed, { marginTop: 6 }]}>{formatCurrency(totalExpenses)}</Text>
+              <Text style={[styles.cardValueRed, { marginTop: 6 }]}>
+                {formatCurrency(totalExpenses)}
+              </Text>
             </View>
 
-            {/* Card Valor na Carteira (estilizado com seu ícone/cor) */}
+            {/* Card Valor na carteira */}
             <View style={{
               backgroundColor: isDark ? cardDefs.carteira.bgDark : cardDefs.carteira.bgLight,
               borderRadius: 12,
@@ -144,23 +163,20 @@ export default function ResumoFinanceiro() {
                 </Text>
               </View>
 
-              <Text style={styles.cardValueGreen}>{formatCurrency(totalInWallet)}</Text>
+              <Text style={styles.cardValueGreen}>
+                {formatCurrency(totalInWallet)}
+              </Text>
             </View>
 
-            {/* Card de Saldo Restante (estilizado com ícone/cor solicitados) */}
+            {/* Card Saldo restante */}
             {salary > 0 && (
               <View style={{
-                backgroundColor: isDark ? '#1E1E1E' : '#fff',
+                backgroundColor: isDark ? cardDefs.saldo.bgDark : cardDefs.saldo.bgLight,
                 borderRadius: 12,
                 padding: 20,
                 marginTop: 12,
                 borderWidth: 1,
                 borderColor: isDark ? '#444' : '#e0e0e0',
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: isDark ? 0.3 : 0.1,
-                shadowRadius: 4,
-                elevation: 3,
               }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -175,7 +191,7 @@ export default function ResumoFinanceiro() {
                     }}>
                       <Text style={{ fontSize: 18 }}>{cardDefs.saldo.icon}</Text>
                     </View>
-                    <Text style={{ fontSize: 16, fontWeight: '600', color: isDark ? '#B0B0B0' : '#666' }}>
+                    <Text style={{ fontSize: 16, fontWeight: '600', color: isDark ? '#fff' : '#333' }}>
                       Saldo restante este mês
                     </Text>
                   </View>
@@ -200,73 +216,50 @@ export default function ResumoFinanceiro() {
                   <View style={{
                     height: '100%',
                     width: `${Math.min(percentageSpent, 100)}%`,
-                    backgroundColor: percentageSpent > 80 ? '#f44336' : percentageSpent > 50 ? '#FF9800' : '#4CAF50',
-                    borderRadius: 4,
+                    backgroundColor:
+                      percentageSpent > 80 ? '#f44336' :
+                      percentageSpent > 50 ? '#FF9800' :
+                      '#4CAF50',
                   }} />
                 </View>
 
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <Text style={{ fontSize: 12, color: isDark ? '#B0B0B0' : '#666' }}>
+                  <Text style={{ fontSize: 12, color: isDark ? '#ccc' : '#666' }}>
                     Gasto: {formatCurrency(monthTotal)}
                   </Text>
-                  <Text style={{ fontSize: 12, color: isDark ? '#B0B0B0' : '#666' }}>
+                  <Text style={{ fontSize: 12, color: isDark ? '#ccc' : '#666' }}>
                     {percentageSpent}% da renda
                   </Text>
                 </View>
               </View>
             )}
 
-            {/* Banner informativo (mantém lógica de aviso, com visual coerente) */}
-            {salary > 0 && monthTotal > 0 && (
-              <View style={[styles.banner, {
-                backgroundColor: percentageSpent > 80 ? '#FFF3E0' : percentageSpent > 50 ? '#FFF9C4' : '#E8F5E9',
-                borderLeftColor: percentageSpent > 80 ? '#f44336' : percentageSpent > 50 ? '#FF9800' : '#4CAF50',
-                marginTop: 12,
-              }]}>
-                <Text style={[styles.bannerText, {
-                  color: percentageSpent > 80 ? '#d32f2f' : percentageSpent > 50 ? '#F57C00' : '#2E7D32',
-                  fontWeight: '600'
-                }]}>
-                  {percentageSpent > 80 
-                    ? '⚠️ Atenção! Você já gastou mais de 80% da sua renda' 
-                    : percentageSpent > 50
-                    ? '💡 Você já gastou mais da metade da sua renda'
-                    : '✅ Você está dentro do orçamento'
-                  }
-                </Text>
-              </View>
-            )}
-
-            {/* Comparativo Mensal - com cards no mesmo estilo */}
+            {/* Comparativo mensal */}
             {expensesByMonth.length > 0 && (
               <View style={{ marginTop: 24 }}>
                 <Text style={{ fontSize: 20, fontWeight: '700', marginBottom: 16, color: isDark ? '#fff' : '#000' }}>
                   Comparativo Mensal
                 </Text>
+
                 {expensesByMonth.map((item) => {
                   const isCurrentMonth = item.month === currentMonth;
 
                   return (
-                    <View key={item.month} style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      padding: 16,
-                      marginBottom: 12,
-                      backgroundColor: isCurrentMonth 
-                        ? (isDark ? '#1E3A5F' : '#E3F2FD') 
-                        : (isDark ? '#1E1E1E' : '#fff'),
-                      borderRadius: 12,
-                      borderWidth: isCurrentMonth ? 2 : 1,
-                      borderColor: isCurrentMonth ? '#1E88E5' : (isDark ? '#444' : '#e0e0e0'),
-                      borderLeftWidth: 4,
-                      borderLeftColor: isCurrentMonth ? '#1E88E5' : '#E53935',
-                      shadowColor: '#000',
-                      shadowOffset: { width: 0, height: 2 },
-                      shadowOpacity: isDark ? 0.3 : 0.1,
-                      shadowRadius: 3,
-                      elevation: 3,
-                    }}>
+                    <View
+                      key={item.month}
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        padding: 16,
+                        backgroundColor: isCurrentMonth
+                          ? (isDark ? '#1E3A5F' : '#E3F2FD')
+                          : (isDark ? '#1E1E1E' : '#fff'),
+                        borderRadius: 12,
+                        borderWidth: isCurrentMonth ? 2 : 1,
+                        borderColor: isCurrentMonth ? '#1E88E5' : (isDark ? '#444' : '#e0e0e0'),
+                        marginBottom: 12,
+                      }}
+                    >
                       <View>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                           <Text style={{ fontSize: 16, fontWeight: '700', color: isDark ? '#fff' : '#000' }}>
@@ -280,16 +273,16 @@ export default function ResumoFinanceiro() {
                               borderRadius: 10,
                               marginLeft: 8,
                             }}>
-                              <Text style={{ fontSize: 10, color: '#fff', fontWeight: '600' }}>
-                                ATUAL
-                              </Text>
+                              <Text style={{ fontSize: 10, color: '#fff' }}>ATUAL</Text>
                             </View>
                           )}
                         </View>
-                        <Text style={{ fontSize: 12, color: isDark ? '#B0B0B0' : '#666', marginTop: 4 }}>
+
+                        <Text style={{ fontSize: 12, color: isDark ? '#ccc' : '#666', marginTop: 4 }}>
                           📊 {item.count} {item.count === 1 ? 'despesa' : 'despesas'}
                         </Text>
                       </View>
+
                       <Text style={{ fontSize: 20, fontWeight: '700', color: '#E53935' }}>
                         {formatCurrency(item.total)}
                       </Text>
@@ -299,27 +292,20 @@ export default function ResumoFinanceiro() {
               </View>
             )}
 
-            {/* Mensagem quando não há despesas por mês */}
-            {expensesByMonth.length === 0 && (
-              <View style={{ marginTop: 24, padding: 20, alignItems: 'center' }}>
-                <Text style={{ fontSize: 16, color: isDark ? '#B0B0B0' : '#666', textAlign: 'center' }}>
-                  Nenhuma despesa cadastrada ainda.
-                </Text>
-                <Text style={{ fontSize: 14, color: isDark ? '#888' : '#999', marginTop: 8, textAlign: 'center' }}>
-                  Clique em "Nova despesa" para começar.
-                </Text>
-              </View>
-            )}
           </>
         )}
       </ScrollView>
 
-      {/* Botão Nova Despesa (mantém padrão visual) */}
-      <View style={[styles.footer, { backgroundColor: isDark ? '#1E1E1E' : '#fff' }]}>
+      {/* Footer */}
+      <View style={[
+        styles.footer,
+        { backgroundColor: isDark ? '#1E1E1E' : '#fff' }
+      ]}>
         <TouchableOpacity style={styles.button} onPress={handleNewExpense}>
           <Text style={styles.buttonText}>Nova despesa</Text>
         </TouchableOpacity>
       </View>
+
     </SafeAreaView>
   );
 }

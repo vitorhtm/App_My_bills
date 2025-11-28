@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
 import {
-  SafeAreaView,
   ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link, router } from 'expo-router';
 import { styles } from './menu.css.js';
 import { useTheme } from './theme-context';
